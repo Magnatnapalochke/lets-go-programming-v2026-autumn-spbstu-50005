@@ -28,9 +28,9 @@ func NewDepartment() *Department {
 	}
 }
 
-func readEmployee(in *bufio.Reader) *Employee {
+func readEmployee(reader *bufio.Reader) *Employee {
 	var emp Employee
-	if _, err := fmt.Fscan(in, &emp.Operand, &emp.Temp); err != nil {
+	if _, err := fmt.Fscan(reader, &emp.Operand, &emp.Temp); err != nil {
 		fmt.Fprintln(os.Stderr, "Invalid input of employee:", err)
 		os.Exit(1)
 	}
@@ -39,21 +39,21 @@ func readEmployee(in *bufio.Reader) *Employee {
 }
 
 func (d *Department) ProcessEmployee(emp *Employee) int {
-
 	if emp.Temp < MinAllowedTemp || emp.Temp > MaxAllowedTemp {
 		fmt.Fprintln(os.Stderr, "Invalid input of employee temp")
 		os.Exit(1)
 	}
 
-	if emp.Operand == ">=" {
+	switch emp.Operand {
+	case ">=":
 		if emp.Temp > d.MinTemp {
 			d.MinTemp = emp.Temp
 		}
-	} else if emp.Operand == "<=" {
+	case "<=":
 		if emp.Temp < d.MaxTemp {
 			d.MaxTemp = emp.Temp
 		}
-	} else {
+	default:
 		fmt.Fprintln(os.Stderr, "Wrong temperature operand")
 		os.Exit(1)
 	}
@@ -65,10 +65,10 @@ func (d *Department) ProcessEmployee(emp *Employee) int {
 	return -1
 }
 
-func getCountOfEmployees(in *bufio.Reader) {
+func getCountOfEmployees(reader *bufio.Reader) {
 	var employees int
 
-	if _, err := fmt.Fscan(in, &employees); err != nil {
+	if _, err := fmt.Fscan(reader, &employees); err != nil {
 		fmt.Fprintln(os.Stderr, "Invalid input in employees count:", err)
 		os.Exit(1)
 	}
@@ -81,18 +81,18 @@ func getCountOfEmployees(in *bufio.Reader) {
 	dept := NewDepartment()
 
 	for range employees {
-		emp := readEmployee(in)
+		emp := readEmployee(reader)
 		optimalTemp := dept.ProcessEmployee(emp)
 		fmt.Println(optimalTemp)
 	}
 }
 
 func main() {
-	in := bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(os.Stdin)
 
 	var departments int
 
-	if _, err := fmt.Fscan(in, &departments); err != nil {
+	if _, err := fmt.Fscan(reader, &departments); err != nil {
 		fmt.Fprintln(os.Stderr, "Invalid input in departments count:", err)
 		os.Exit(1)
 	}
@@ -103,6 +103,6 @@ func main() {
 	}
 
 	for range departments {
-		getCountOfEmployees(in)
+		getCountOfEmployees(reader)
 	}
 }
